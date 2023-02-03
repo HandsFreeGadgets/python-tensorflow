@@ -8,6 +8,16 @@ The binaries can be downloaded under `relases`.
 
 For these platforms like used for the Raspberry Pi 4 and NVIDIA Xavier NX.
 
+All compilatiosn are targeting Python 3.8. Install a
+
+~~~shell
+git clone https://github.com/pyenv/pyenv.git ~/.pyenv
+# Follow instructions on https://github.com/pyenv/pyenv
+sudo apt-get install libbz2-dev libssl-dev libreadline-dev libsqlite3-dev libffi-dev
+ldconfig
+pyenv install 3.8.16
+~~~
+
 ## Tensorflow
 
 A cross-platform build with `tensorflow/tools/ci_build/ci_build.sh PI-PYTHON38 tensorflow/tools/ci_build/pi/build_raspberry_pi.sh AARCH64` does not work and fails currently,
@@ -61,6 +71,7 @@ Execute on the Raspberry Pi 4:
 git clone https://github.com/tensorflow/addons.git
 cd addons
 git checkout v0.17.1
+pyenv local 3.8.16
 python3 -m venv venv
 source venv/bin/activate
 pip3 install ../python-wheels/aarch64/tensorflow-2.8.4-cp38-cp38-linux_aarch64.whl
@@ -80,6 +91,7 @@ Execute on the Raspberry Pi 4:
 git clone git@github.com:tensorflow/text.git
 cd text
 git checkout v2.8.2
+pyenv local 3.8.16
 python3 -m venv venv
 source venv/bin/activate
 pip3 install aarch64/tensorflow-2.8.2-cp38-cp38-linux_aarch64.whl
@@ -103,7 +115,10 @@ make
 sudo make install
 ~~~
 
+Build the Python wheel:
+
 ~~~shell
+pyenv local 3.8.16
 python3 -m venv confluent-kafka
 source confluent-kafka/bin/activate
 pip install confluent-kafka
