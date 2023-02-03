@@ -6,9 +6,9 @@ The binaries can be downloaded under `relases`.
 
 # aarch64 
 
-For these platforms like used for the Raspberry Pi 4 and NVIDIA Xavier NX.
+These are platforms like the Raspberry Pi 4 or NVIDIA Xavier NX.
 
-All compilatiosn are targeting Python 3.8. Install a
+All compilations are targeting Python 3.8. Install a
 
 ~~~shell
 git clone https://github.com/pyenv/pyenv.git ~/.pyenv
