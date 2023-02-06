@@ -78,7 +78,7 @@ pip3 install ../python-wheels/aarch64/tensorflow-2.8.4-cp38-cp38-linux_aarch64.w
 python3 ./configure.py
 bazel build build_pip_pkg
 bazel-bin/build_pip_pkg artifacts
-# copy the whl to aarch64
+# relase the whl
 ~~~
 
 ## Tensorflow Text
@@ -96,7 +96,7 @@ python3 -m venv venv
 source venv/bin/activate
 pip3 install aarch64/tensorflow-2.8.2-cp38-cp38-linux_aarch64.whl
 ./oss_scripts/run_build.sh
-# copy the whl to aarch64
+# relase the whl
 ~~~
 
 ## confluent-kafka
@@ -127,4 +127,65 @@ find ~/.cache/pip/wheels/ -name *_kafka*
 cp ~/.cache/pip/wheels/<path>/confluent_kafka-1.9.2-cp38-cp38-linux_aarch64.whl aarch64/
 rm -rf confluent-kafka
 ~~~
+
+# Atom Based Processors
+
+These are platforms like the Rock Pi X or MeLe Quieter2Q.
+
+## Tensorflow
+
+The x86_64 wheels for TensorFlow are causing:
+
+> The TensorFlow library was compiled to use AVX instructions, but these aren't available on your machine.
+
+Use a Docker image for building TensorFlow (a direct build was missing some dependencies) on a different Ubuntu based system.
+The direct compilation on the Rock Pi X is slow and fails due to memory problems.
+
+~~~shell
+docker pull tensorflow/tensorflow:devel
+docker run -it -w /tensorflow_src -v $PWD:/mnt -e HOST_PERMS="$(id -u):$(id -g)" tensorflow/tensorflow:devel bash
+~~~
+
+Inside the container execute:
+
+~~~shell
+git pull
+git config remote.origin.fetch '+refs/heads/*:refs/remotes/origin/*'
+git fetch --all
+git checkout v2.8.4
+~~~
+
+The Python version used for the build is Python 3.8, and the TensorFlow Docker image is only using version 3.6 on Ubuntu 18.04.
+
+~~~shell
+sudo apt-get install nano
+git clone https://github.com/pyenv/pyenv.git ~/.pyenv
+# Follow instructions on https://github.com/pyenv/pyenv
+source ~/.profile 
+source ~/.bashrc
+sudo apt-get install libbz2-dev libssl-dev libreadline-dev libsqlite3-dev libffi-dev
+ldconfig
+pyenv install 3.8.16
+pyenv local 3.8.16
+~~~
+
+Specify the `march` flag listed in `gcc -march=native -Q --help=target` while running `configure`. It should be
+* Rock Pi X: `-march=silvermont` 
+* LeMe Quieter2Q: `-march=goldmont-plus`
+
+~~~shell
+./config
+wget https://github.com/bazelbuild/bazel/releases/download/4.2.1/bazel-4.2.1-linux-x86_64
+chmod 755 bazel-4.2.1-linux-x86_64
+sudo mv bazel-4.2.1-linux-x86_64 /usr/local/bin/bazel
+pip3 install numpy==1.23.5 wheel 
+pip3 install keras_preprocessing --no-deps
+bazel build --config=mkl --config=opt //tensorflow/tools/pip_package:build_pip_package
+./bazel-bin/tensorflow/tools/pip_package/build_pip_package /mnt
+chown $HOST_PERMS /mnt/tensorflow-2.8.4-cp38-cp38-linux_x86_64.whl
+# copy files from host computer
+# relase the whl from directory where Docker was started
+# quit the docker image
+~~~
+
 
