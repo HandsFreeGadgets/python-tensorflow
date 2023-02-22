@@ -4,6 +4,12 @@ This repository contains python wheels where no pre-built version is available.
 
 The binaries can be downloaded under `relases`.
 
+# Funding
+
+The project was funded by the German Federal Ministry of Education and Research under grant number 01IS22S34 from September 2022 to February 2023. The authors are responsible for the content of this publication.
+
+<img src="BMBF_gefoerdert_2017_en.jpg" width="300px"/>
+
 # aarch64 
 
 These are platforms like the Raspberry Pi 4 or NVIDIA Xavier NX.
